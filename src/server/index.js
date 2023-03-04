@@ -20,9 +20,16 @@ app.use(bodyParser.json());
 // Handling CORS
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET", "PUT", "POST", "DELETE");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
+});
+
+
+// option for CROS DELETE and PUT HTTP request
+app.options('/bookshelf/data/:id', (req, res) => {
+  res.header("Access-Control-Allow-Methods", "DELETE","PUT"); // 
+  res.send();
 });
 
 // make new account
@@ -77,6 +84,23 @@ app.get("/users", async (req, res) => {
   }
 });
 
+app.get("/bookshelf/data/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `SELECT * FROM bookshelf_data WHERE id=${id}`;
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+
+
+
+
 // edit books;
 app.put("/bookshelf/:id", async (req, res) => {
   try {
@@ -99,6 +123,7 @@ app.put("/bookshelf/:id", async (req, res) => {
     });
   }
 });
+
 
 // get all book with data;
 app.get("/bookshelf/:id", async (req, res) => {
