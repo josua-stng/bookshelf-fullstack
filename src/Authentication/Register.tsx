@@ -104,7 +104,7 @@ const Register = () => {
             placeholder="Username"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            className="border-b-2 border-black pl-1 h-10 mr-[18px]"
+            className="border-b-2 border-black pl-1 mr-[-7px] h-10"
           />
           <div>
             <input
@@ -114,7 +114,7 @@ const Register = () => {
               onChange={(event) => setPassword(event.target.value)}
               className="border-b-2 border-black pl-1 h-10 mt-10"
             />
-            <button type="button" onClick={handlerHidePassword}>
+            <button className="ml-[-25px]"  type="button" onClick={handlerHidePassword}>
               {hidePassword ? (
                 <EyeSlashIcon className="w-5 text-gray-500" />
               ) : (
