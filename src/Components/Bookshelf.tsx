@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import SearchBooks from "./SearchBooks";
 interface Books_data {
@@ -12,19 +12,61 @@ interface Books_data {
 
 const Bookshelf = () => {
   const [books, setBooks] = useState<Books_data[]>([]);
-  const [searchBooks,setSearchBooks] = useState("")
-
+  const [searchBooks, setSearchBooks] = useState("");
+  const navigate = useNavigate();
   // Ambil userId dari localStorage
   const userId: string | null = localStorage.getItem("userId");
 
-  const getValueInputSearchBooks = (event:React.ChangeEvent<HTMLInputElement>)=>{
+  const getValueInputSearchBooks = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSearchBooks(event.target.value);
-  }
+  };
 
   const getBooks = async (userId: string | null) => {
     const response = await fetch(`http://localhost:3001/bookshelf/${userId}`);
     const data = await response.json();
     setBooks(data);
+  };
+
+  const deleteBooks = async (bookId: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/bookshelf/${bookId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.status >= 401) {
+        console.error(Error);
+      }
+      const updateBooks = books.filter((book) => book.id !== bookId);
+      setBooks(updateBooks);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getDeleteBooks = (bookId: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to return this book!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteBooks(bookId);
+        Swal.fire("Deleted!", "Your book has been deleted.", "success");
+      }
+    });
+  };
+
+  const logOut = async () => {
+    localStorage.removeItem("userId");
+    navigate("/");
   };
 
   useEffect(() => {
@@ -37,12 +79,12 @@ const Bookshelf = () => {
   return (
     <div className="App">
       <div className="flex justify-end ">
-          <Link
-           to='/'
-           className="mt-2 mr-10 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg"
-           >
+        <button
+          className="mt-2 mr-10 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg"
+          onClick={logOut}
+        >
           Log out
-          </Link>
+        </button>
       </div>
       <div className="bg-red-200 mx-auto text-center lg:mt-18 mt-12 p-10 w-[90%] mb-10">
         <h2 className="text-3xl font-bold">Book List</h2>
@@ -61,7 +103,9 @@ const Bookshelf = () => {
               if (searchBooks === "") {
                 return book;
               } else if (
-                book.title_book.toLowerCase().includes(searchBooks.toLowerCase())
+                book.title_book
+                  .toLowerCase()
+                  .includes(searchBooks.toLowerCase())
               ) {
                 return book;
               }
@@ -71,8 +115,12 @@ const Bookshelf = () => {
               return (
                 <div key={book.id} className="mt-5 flex flex-col ">
                   <div className="bg-cyan-200 h-[230px] p-2">
-                    <p className="font-bold p-5 lg:text-2xl">{book.title_book}</p>
-                    <p className="lg:text-base">Summary : {book.summary_book}</p>
+                    <p className="font-bold p-5 lg:text-2xl">
+                      {book.title_book}
+                    </p>
+                    <p className="lg:text-base">
+                      Summary : {book.summary_book}
+                    </p>
                     <div className="flex justify-evenly pt-5 pb-5">
                       <p>Year : {book.year_book}</p>
                       <p>Author : {book.author_book}</p>
@@ -84,7 +132,7 @@ const Bookshelf = () => {
                         </button>
                       </Link>
                       <button
-                        // onClick={() => alertButtonDanger(book.id)}
+                        onClick={() => getDeleteBooks(book.id)}
                         className="bg-gray-300 w-[100px] h-[30px] hover:bg-gray-200"
                       >
                         Delete
