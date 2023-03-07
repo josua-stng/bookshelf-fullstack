@@ -25,12 +25,71 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // option for CROS DELETE and PUT HTTP request
-app.options('/bookshelf/data/:id', (req, res) => {
-  res.header("Access-Control-Allow-Methods", "DELETE","PUT"); // 
+app.options("/bookshelf/data/:id", (req, res) => {
+  res.header("Access-Control-Allow-Methods", "DELETE", "PUT"); //
   res.send();
 });
+
+// get all user
+app.get("/users", async (req, res) => {
+  try {
+    const query = `SELECT * FROM users`;
+    const result = await pool.query(query, []);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+
+// get detail user book
+app.get('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `SELECT * FROM users WHERE id = ${id}`;
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Internal Server Error',
+    });
+  }
+});
+
+// get account detail books
+app.get("/bookshelf/data/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `SELECT * FROM bookshelf_data WHERE id=${id}`;
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+
+
+// get relations account book with data book;
+app.get("/bookshelf/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `SELECT * FROM bookshelf_data WHERE user_id =${id}`;
+    const result = await pool.query(query);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
+
 
 // make new account
 app.post("/users", async (req, res) => {
@@ -70,37 +129,6 @@ app.post("/bookshelf", async (req, res) => {
 
 
 
-// get all user
-app.get("/users", async (req, res) => {
-  try {
-    const query = `SELECT * FROM users`;
-    const result = await pool.query(query, []);
-    res.status(201).json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
-  }
-});
-
-app.get("/bookshelf/data/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const query = `SELECT * FROM bookshelf_data WHERE id=${id}`;
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
-  }
-});
-
-
-
-
 // edit books;
 app.put("/bookshelf/:id", async (req, res) => {
   try {
@@ -125,20 +153,6 @@ app.put("/bookshelf/:id", async (req, res) => {
 });
 
 
-// get all book with data;
-app.get("/bookshelf/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const query = `SELECT * FROM bookshelf_data WHERE user_id =${id}`;
-    const result = await pool.query(query);
-    res.status(201).json(result.rows);
-  } catch (error) {
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
-  }
-});
-
 // delete books;
 app.delete("/bookshelf/:id", async (req, res) => {
   try {
@@ -156,10 +170,24 @@ app.delete("/bookshelf/:id", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("<h1>Testing</h1>");
+// delete users;
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `DELETE FROM users WHERE id = ${id}`;
+    const result = await pool.query(query);
+    res.status(201).json({
+      message: "Success Delete Account",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({
+      message: "Internal Server Error",
+    });
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`Your server running at http://localhost:3001`);
 });
+
