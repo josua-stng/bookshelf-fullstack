@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import Swal from "sweetalert2";
 interface User {
   id: number;
   username: string;
@@ -27,6 +28,22 @@ function LoginPage() {
   const passwordType = showPassword ? "text" : "password";
   const navigate = useNavigate();
 
+  const passwordWrong = () =>{
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Wrong password',
+    })
+  }
+
+  const usernameOrPasswordWrong= () =>{
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Wrong username or Password',
+    })
+  }
+
   const handlerUserLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let userFound = false;
@@ -37,13 +54,13 @@ function LoginPage() {
         userFound = true;
         return;
       } else if (users.username === username && users.password !== password) {
-        alert("Wrong password");
+        passwordWrong()
         userFound = true;
         return;
       }
     });
     if (!userFound) {
-      alert("Wrong username or Password");
+      usernameOrPasswordWrong()
       return;
     }
   };
@@ -74,7 +91,7 @@ function LoginPage() {
               placeholder="Password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="border-b-2 border-black  pl-1 h-10  mt-10 mx-auto"
+              className="border-b-2 border-black  pl-1 h-10 mt-10 mx-auto"
             />
             <button
               className="ml-[-25px] "
