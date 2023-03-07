@@ -13,6 +13,7 @@ interface Books_data {
 const Bookshelf = () => {
   const [books, setBooks] = useState<Books_data[]>([]);
   const [searchBooks, setSearchBooks] = useState("");
+  const [userName, setUsername] = useState<string>("");
   const navigate = useNavigate();
   // Ambil userId dari localStorage
   const userId: string | null = localStorage.getItem("userId");
@@ -69,22 +70,39 @@ const Bookshelf = () => {
     navigate("/");
   };
 
+  const getUser = async () => {
+    try {
+      const userNameData = await fetch(`http://localhost:3001/users/${userId}`);
+      const data = await userNameData.json();
+      setUsername(data[0].username);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
   useEffect(() => {
     // Pastikan userId ada sebelum memanggil getBooks
     if (userId) {
       getBooks(userId);
+      getUser();
     }
   }, [userId]);
 
   return (
     <div className="App">
       <div className="flex justify-end ">
-        <button
-          className="mt-2 mr-10 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg"
-          onClick={logOut}
-        >
-          Log out
-        </button>
+        <div className="flex justify-center items-center">
+          <button
+            className="mt-2 mr-2 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg"
+            onClick={logOut}
+          >
+            Log out
+          </button>
+          <p className="mt-2 mr-5   flex justify-center items-center w-[80px] h-10 rounded-lg">
+            Hii {userName}
+          </p>
+        </div>
       </div>
       <div className="bg-red-200 mx-auto text-center lg:mt-18 mt-12 p-10 w-[90%] mb-10">
         <h2 className="text-3xl font-bold">Book List</h2>
