@@ -94,7 +94,7 @@ const Bookshelf = () => {
       <div className="flex justify-end ">
         <div className="flex justify-center items-center">
           <button
-            className="mt-2 mr-2 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg"
+            className="mt-2 mr-2 bg-gray-200 flex justify-center items-center w-[80px] h-10 rounded-lg hover:bg-gray-300"
             onClick={logOut}
           >
             Log out
