@@ -46,7 +46,7 @@ app.get("/users", async (req, res) => {
 });
 
 // get detail user book
-app.get('/users/:id', async (req, res) => {
+app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const query = `SELECT * FROM users WHERE id = ${id}`;
@@ -55,12 +55,12 @@ app.get('/users/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: 'Internal Server Error',
+      message: "Internal Server Error",
     });
   }
 });
 
-// get account detail books
+// get detail books
 app.get("/bookshelf/data/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -75,7 +75,6 @@ app.get("/bookshelf/data/:id", async (req, res) => {
   }
 });
 
-
 // get relations account book with data book;
 app.get("/bookshelf/:id", async (req, res) => {
   try {
@@ -89,7 +88,6 @@ app.get("/bookshelf/:id", async (req, res) => {
     });
   }
 });
-
 
 // make new account
 app.post("/users", async (req, res) => {
@@ -127,8 +125,6 @@ app.post("/bookshelf", async (req, res) => {
   }
 });
 
-
-
 // edit books;
 app.put("/bookshelf/:id", async (req, res) => {
   try {
@@ -151,7 +147,6 @@ app.put("/bookshelf/:id", async (req, res) => {
     });
   }
 });
-
 
 // delete books;
 app.delete("/bookshelf/:id", async (req, res) => {
@@ -190,4 +185,3 @@ app.delete("/users/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Your server running at http://localhost:3001`);
 });
-
